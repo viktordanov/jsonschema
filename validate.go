@@ -40,7 +40,7 @@ func (b BaseValidator) AddError(errs *[]ValError, propPath string, data interfac
 }
 
 // ValMaker is a function that generates instances of a validator.
-// Calls to ValMaker will be passed directly to json.Marshal,
+// Calls to ValMaker will be passed directly to jsoniter.Marshal,
 // so the returned value should be a pointer
 type ValMaker func() Validator
 
@@ -49,7 +49,7 @@ type ValMaker func() Validator
 // and be able to get cleanly endcode/decode to JSON
 func RegisterValidator(propName string, maker ValMaker) {
 	// TODO - should this call the function and panic if
-	// the result can't be fed to json.Umarshal?
+	// the result can't be fed to jsoniter.Umarshal?
 	DefaultValidators[propName] = maker
 }
 

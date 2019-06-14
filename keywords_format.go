@@ -1,7 +1,7 @@
 package jsonschema
 
 import (
-	// "encoding/json"
+	// "github.com/json-iterator/go"
 	"fmt"
 	"net"
 	"net/mail"

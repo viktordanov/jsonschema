@@ -2,7 +2,7 @@ package jsonschema
 
 import (
 	"bytes"
-	"encoding/json"
+	"github.com/json-iterator/go"
 	"fmt"
 )
 
@@ -33,7 +33,7 @@ func (v ValError) Error() string {
 
 // InvalidValueString returns the errored value as a string
 func InvalidValueString(data interface{}) string {
-	bt, err := json.Marshal(data)
+	bt, err := jsoniter.Marshal(data)
 	if err != nil {
 		return ""
 	}

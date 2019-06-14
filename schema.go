@@ -8,7 +8,7 @@
 package jsonschema
 
 import (
-	"encoding/json"
+	"github.com/json-iterator/go"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -57,11 +57,11 @@ func (rs *RootSchema) TopLevelType() string {
 	return "unknown"
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for
 // RootSchema
 func (rs *RootSchema) UnmarshalJSON(data []byte) error {
 	sch := &Schema{}
-	if err := json.Unmarshal(data, sch); err != nil {
+	if err := jsoniter.Unmarshal(data, sch); err != nil {
 		return err
 	}
 
@@ -73,7 +73,7 @@ func (rs *RootSchema) UnmarshalJSON(data []byte) error {
 	suri := struct {
 		SchemaURI string `json:"$schema"`
 	}{}
-	if err := json.Unmarshal(data, &suri); err != nil {
+	if err := jsoniter.Unmarshal(data, &suri); err != nil {
 		return err
 	}
 
@@ -158,7 +158,7 @@ func (rs *RootSchema) FetchRemoteReferences() error {
 					if u, err := url.Parse(ref); err == nil {
 						if res, err := http.Get(u.String()); err == nil {
 							s := &RootSchema{}
-							if err := json.NewDecoder(res.Body).Decode(s); err != nil {
+							if err := jsoniter.NewDecoder(res.Body).Decode(s); err != nil {
 								return err
 							}
 							refs[ref] = &s.Schema
@@ -185,7 +185,7 @@ func (rs *RootSchema) FetchRemoteReferences() error {
 func (rs *RootSchema) ValidateBytes(data []byte) ([]ValError, error) {
 	var doc interface{}
 	errs := []ValError{}
-	if err := json.Unmarshal(data, &doc); err != nil {
+	if err := jsoniter.Unmarshal(data, &doc); err != nil {
 		return errs, fmt.Errorf("error parsing JSON bytes: %s", err.Error())
 	}
 	rs.Validate("/", doc, &errs)
@@ -457,11 +457,11 @@ type _schema struct {
 	Format      string             `json:"format,omitempty"`
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for Schema
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for Schema
 func (s *Schema) UnmarshalJSON(data []byte) error {
 	// support simple true false schemas that always pass or fail
 	var b bool
-	if err := json.Unmarshal(data, &b); err == nil {
+	if err := jsoniter.Unmarshal(data, &b); err == nil {
 		if b {
 			// boolean true Always passes validation, as if the empty schema {}
 			*s = Schema{schemaType: schemaTypeTrue}
@@ -473,7 +473,7 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 	}
 
 	_s := _schema{}
-	if err := json.Unmarshal(data, &_s); err != nil {
+	if err := jsoniter.Unmarshal(data, &_s); err != nil {
 		return err
 	}
 
@@ -503,8 +503,8 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 	// testdata/draft7/ref.json#/4/schema
 	// mean we should return the full object
 
-	valprops := map[string]json.RawMessage{}
-	if err := json.Unmarshal(data, &valprops); err != nil {
+	valprops := map[string]jsoniter.RawMessage{}
+	if err := jsoniter.Unmarshal(data, &valprops); err != nil {
 		return err
 	}
 
@@ -523,14 +523,14 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 					sch.extraDefinitions = Definitions{}
 				}
 				s := new(Schema)
-				if err := json.Unmarshal(rawmsg, s); err != nil {
+				if err := jsoniter.Unmarshal(rawmsg, s); err != nil {
 					return fmt.Errorf("error unmarshaling %s from json: %s", prop, err.Error())
 				}
 				sch.extraDefinitions[prop] = s
 				continue
 			}
 		}
-		if err := json.Unmarshal(rawmsg, val); err != nil {
+		if err := jsoniter.Unmarshal(rawmsg, val); err != nil {
 			return fmt.Errorf("error unmarshaling %s from json: %s", prop, err.Error())
 		}
 		sch.Validators[prop] = val
@@ -562,7 +562,7 @@ func (s *Schema) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON implements the json.Marshaler interface for Schema
+// MarshalJSON implements the jsoniter.Marshaler interface for Schema
 func (s Schema) MarshalJSON() ([]byte, error) {
 	switch s.schemaType {
 	case schemaTypeFalse:
@@ -615,7 +615,7 @@ func (s Schema) MarshalJSON() ([]byte, error) {
 		for k, v := range s.extraDefinitions {
 			obj[k] = v
 		}
-		return json.Marshal(obj)
+		return jsoniter.Marshal(obj)
 	}
 }
 

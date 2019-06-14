@@ -1,7 +1,7 @@
 package jsonschema
 
 import (
-	"encoding/json"
+	"github.com/json-iterator/go"
 	"strconv"
 )
 
@@ -169,17 +169,17 @@ func (n Not) JSONChildren() (res map[string]JSONPather) {
 	return Schema(n).JSONChildren()
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for Not
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for Not
 func (n *Not) UnmarshalJSON(data []byte) error {
 	var sch Schema
-	if err := json.Unmarshal(data, &sch); err != nil {
+	if err := jsoniter.Unmarshal(data, &sch); err != nil {
 		return err
 	}
 	*n = Not(sch)
 	return nil
 }
 
-// MarshalJSON implements json.Marshaller for Not
+// MarshalJSON implements jsoniter.Marshaller for Not
 func (n Not) MarshalJSON() ([]byte, error) {
-	return json.Marshal(Schema(n))
+	return jsoniter.Marshal(Schema(n))
 }

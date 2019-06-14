@@ -6,7 +6,12 @@
 [![CI](https://img.shields.io/circleci/project/github/qri-io/jsonschema.svg?style=flat-square)](https://circleci.com/gh/qri-io/jsonschema)
 [![Go Report Card](https://goreportcard.com/badge/github.com/qri-io/jsonschema)](https://goreportcard.com/report/github.com/qri-io/jsonschema)
 
-golang implementation of the [JSON Schema Specification](http://json-schema.org/), which lets you write JSON that validates some other json. Rad.
+golang implementation of the [JSON Schema Specification](http://json-schema.org/), which lets you write JSON that validates some other jsoniter. Rad.
+
+# Fork information
+
+The standard `encoding/json` library has been swapped out for the much faster json-iterator. This is merely an experiment to how much the library benefits from that; in fact the tests are broken due to the differences in JSON formatting in the output (still correct, just different formatting which breaks tests)
+
 
 ### Package Features
 
@@ -33,7 +38,7 @@ Here's a quick example pulled from the [godoc](https://godoc.org/github.com/qri-
 package main
 
 import (
-	"encoding/json"
+	"github.com/json-iterator/go"
 	"fmt"
 
 	"github.com/qri-io/jsonschema"
@@ -64,7 +69,7 @@ func main() {
     }`)
 
 	rs := &jsonschema.RootSchema{}
-	if err := json.Unmarshal(schemaData, rs); err != nil {
+	if err := jsoniter.Unmarshal(schemaData, rs); err != nil {
 		panic("unmarshal schema: " + err.Error())
 	}
 
@@ -110,7 +115,7 @@ It involves two steps that should happen _before_ allocating any RootSchema inst
 package main
 
 import (
-  "encoding/json"
+  "github.com/json-iterator/go"
   "fmt"
   "github.com/qri-io/jsonschema"
 )
@@ -144,7 +149,7 @@ func main() {
 
   // parse a schema that uses your custom keyword
   rs := new(jsonschema.RootSchema)
-  if err := json.Unmarshal(schBytes, rs); err != nil {
+  if err := jsoniter.Unmarshal(schBytes, rs); err != nil {
     // Real programs handle errors.
     panic(err)
   }

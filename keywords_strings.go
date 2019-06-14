@@ -1,7 +1,7 @@
 package jsonschema
 
 import (
-	"encoding/json"
+	"github.com/json-iterator/go"
 	"fmt"
 	"regexp"
 	"unicode/utf8"
@@ -67,10 +67,10 @@ func (p Pattern) Validate(propPath string, data interface{}, errs *[]ValError) {
 	}
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for Pattern
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for Pattern
 func (p *Pattern) UnmarshalJSON(data []byte) error {
 	var str string
-	if err := json.Unmarshal(data, &str); err != nil {
+	if err := jsoniter.Unmarshal(data, &str); err != nil {
 		return err
 	}
 
@@ -83,9 +83,9 @@ func (p *Pattern) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler for Pattern
+// MarshalJSON implements jsoniter.Marshaler for Pattern
 func (p Pattern) MarshalJSON() ([]byte, error) {
 	re := regexp.Regexp(p)
 	rep := &re
-	return json.Marshal(rep.String())
+	return jsoniter.Marshal(rep.String())
 }

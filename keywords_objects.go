@@ -1,7 +1,7 @@
 package jsonschema
 
 import (
-	"encoding/json"
+	"github.com/json-iterator/go"
 	"fmt"
 	"github.com/qri-io/jsonpointer"
 	"regexp"
@@ -185,10 +185,10 @@ func (p PatternProperties) JSONChildren() (res map[string]JSONPather) {
 	return
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for PatternProperties
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for PatternProperties
 func (p *PatternProperties) UnmarshalJSON(data []byte) error {
 	var props map[string]*Schema
-	if err := json.Unmarshal(data, &props); err != nil {
+	if err := jsoniter.Unmarshal(data, &props); err != nil {
 		return err
 	}
 
@@ -211,13 +211,13 @@ func (p *PatternProperties) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler for PatternProperties
+// MarshalJSON implements jsoniter.Marshaler for PatternProperties
 func (p PatternProperties) MarshalJSON() ([]byte, error) {
 	obj := map[string]interface{}{}
 	for _, prop := range p {
 		obj[prop.key] = prop.schema
 	}
-	return json.Marshal(obj)
+	return jsoniter.Marshal(obj)
 }
 
 // AdditionalProperties determines how child instances validate for objects, and does not directly validate the immediate instance itself.
@@ -272,10 +272,10 @@ func (ap AdditionalProperties) Validate(propPath string, data interface{}, errs 
 	}
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for AdditionalProperties
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for AdditionalProperties
 func (ap *AdditionalProperties) UnmarshalJSON(data []byte) error {
 	sch := &Schema{}
-	if err := json.Unmarshal(data, sch); err != nil {
+	if err := jsoniter.Unmarshal(data, sch); err != nil {
 		return err
 	}
 	// fmt.Println("unmarshal:", sch.Ref)
@@ -296,9 +296,9 @@ func (ap *AdditionalProperties) JSONChildren() (res map[string]JSONPather) {
 	return ap.Schema.JSONChildren()
 }
 
-// MarshalJSON implements json.Marshaler for AdditionalProperties
+// MarshalJSON implements jsoniter.Marshaler for AdditionalProperties
 func (ap AdditionalProperties) MarshalJSON() ([]byte, error) {
-	return json.Marshal(ap.Schema)
+	return jsoniter.Marshal(ap.Schema)
 }
 
 // Dependencies : [CREF1]
@@ -375,15 +375,15 @@ func (d Dependency) Validate(propPath string, data interface{}, errs *[]ValError
 	}
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for Dependencies
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for Dependencies
 func (d *Dependency) UnmarshalJSON(data []byte) error {
 	props := []string{}
-	if err := json.Unmarshal(data, &props); err == nil {
+	if err := jsoniter.Unmarshal(data, &props); err == nil {
 		*d = Dependency{props: props}
 		return nil
 	}
 	sch := &Schema{}
-	err := json.Unmarshal(data, sch)
+	err := jsoniter.Unmarshal(data, sch)
 
 	if err == nil {
 		*d = Dependency{schema: sch}
@@ -391,12 +391,12 @@ func (d *Dependency) UnmarshalJSON(data []byte) error {
 	return err
 }
 
-// MarshalJSON implements json.Marshaler for Dependency
+// MarshalJSON implements jsoniter.Marshaler for Dependency
 func (d Dependency) MarshalJSON() ([]byte, error) {
 	if d.schema != nil {
-		return json.Marshal(d.schema)
+		return jsoniter.Marshal(d.schema)
 	}
-	return json.Marshal(d.props)
+	return jsoniter.Marshal(d.props)
 }
 
 // PropertyNames checks if every property name in the instance validates against the provided schema
@@ -438,17 +438,17 @@ func (p PropertyNames) JSONChildren() (res map[string]JSONPather) {
 	return Schema(p).JSONChildren()
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for PropertyNames
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for PropertyNames
 func (p *PropertyNames) UnmarshalJSON(data []byte) error {
 	var sch Schema
-	if err := json.Unmarshal(data, &sch); err != nil {
+	if err := jsoniter.Unmarshal(data, &sch); err != nil {
 		return err
 	}
 	*p = PropertyNames(sch)
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler for PropertyNames
+// MarshalJSON implements jsoniter.Marshaler for PropertyNames
 func (p PropertyNames) MarshalJSON() ([]byte, error) {
-	return json.Marshal(Schema(p))
+	return jsoniter.Marshal(Schema(p))
 }

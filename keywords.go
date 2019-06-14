@@ -1,7 +1,7 @@
 package jsonschema
 
 import (
-	"encoding/json"
+	"github.com/json-iterator/go"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -101,14 +101,14 @@ func (t Type) JSONProp(name string) interface{} {
 	return t.vals[idx]
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for Type
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for Type
 func (t *Type) UnmarshalJSON(data []byte) error {
 	var single string
-	if err := json.Unmarshal(data, &single); err == nil {
+	if err := jsoniter.Unmarshal(data, &single); err == nil {
 		*t = Type{strVal: true, vals: []string{single}}
 	} else {
 		var set []string
-		if err := json.Unmarshal(data, &set); err == nil {
+		if err := jsoniter.Unmarshal(data, &set); err == nil {
 			*t = Type{vals: set}
 		} else {
 			return err
@@ -123,12 +123,12 @@ func (t *Type) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON implements the json.Marshaler interface for Type
+// MarshalJSON implements the jsoniter.Marshaler interface for Type
 func (t Type) MarshalJSON() ([]byte, error) {
 	if t.strVal {
-		return json.Marshal(t.vals[0])
+		return jsoniter.Marshal(t.vals[0])
 	}
-	return json.Marshal(t.vals)
+	return jsoniter.Marshal(t.vals)
 }
 
 // Enum validates successfully against this keyword if its value is equal to one of the
@@ -193,7 +193,7 @@ func (e Enum) JSONChildren() (res map[string]JSONPather) {
 // Const MAY be of any type, including null.
 // An instance validates successfully against this keyword if its
 // value is equal to the value of the keyword.
-type Const json.RawMessage
+type Const jsoniter.RawMessage
 
 // NewConst creates a new Const Validator
 func NewConst() Validator {
@@ -208,7 +208,7 @@ func (c Const) Path() string {
 // Validate implements the validate interface for Const
 func (c Const) Validate(propPath string, data interface{}, errs *[]ValError) {
 	var con interface{}
-	if err := json.Unmarshal(c, &con); err != nil {
+	if err := jsoniter.Unmarshal(c, &con); err != nil {
 		AddError(errs, propPath, data, err.Error())
 		return
 	}
@@ -228,13 +228,13 @@ func (c Const) String() string {
 	return string(c)
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for Const
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for Const
 func (c *Const) UnmarshalJSON(data []byte) error {
 	*c = data
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler for Const
+// MarshalJSON implements jsoniter.Marshaler for Const
 func (c Const) MarshalJSON() ([]byte, error) {
-	return json.Marshal(json.RawMessage(c))
+	return jsoniter.Marshal(jsoniter.RawMessage(c))
 }

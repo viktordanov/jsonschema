@@ -1,7 +1,7 @@
 package jsonschema
 
 import (
-	"encoding/json"
+	"github.com/json-iterator/go"
 	"fmt"
 	"testing"
 )
@@ -28,7 +28,7 @@ func ExampleCustomValidator() {
 	schBytes := []byte(`{ "foo": true }`)
 
 	rs := new(RootSchema)
-	if err := json.Unmarshal(schBytes, rs); err != nil {
+	if err := jsoniter.Unmarshal(schBytes, rs); err != nil {
 		// Real programs handle errors.
 		panic(err)
 	}

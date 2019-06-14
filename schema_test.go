@@ -2,7 +2,7 @@ package jsonschema
 
 import (
 	"bytes"
-	"encoding/json"
+	"github.com/json-iterator/go"
 	"fmt"
 	"github.com/sergi/go-diff/diffmatchpatch"
 	"io/ioutil"
@@ -38,7 +38,7 @@ func ExampleBasic() {
 	}`)
 
 	rs := &RootSchema{}
-	if err := json.Unmarshal(schemaData, rs); err != nil {
+	if err := jsoniter.Unmarshal(schemaData, rs); err != nil {
 		panic("unmarshal schema: " + err.Error())
 	}
 
@@ -92,7 +92,7 @@ func TestTopLevelType(t *testing.T) {
     "required": ["color"]
 }`)
 	rs := &RootSchema{}
-	if err := json.Unmarshal(schemaObject, rs); err != nil {
+	if err := jsoniter.Unmarshal(schemaObject, rs); err != nil {
 		panic("unmarshal schema: " + err.Error())
 	}
 	if rs.TopLevelType() != "object" {
@@ -105,7 +105,7 @@ func TestTopLevelType(t *testing.T) {
     "items" : { "title" : "REFERENCE", "$ref" : "#" }
 }`)
 	rs = &RootSchema{}
-	if err := json.Unmarshal(schemaArray, rs); err != nil {
+	if err := jsoniter.Unmarshal(schemaArray, rs); err != nil {
 		panic("unmarshal schema: " + err.Error())
 	}
 	if rs.TopLevelType() != "array" {
@@ -117,7 +117,7 @@ func TestTopLevelType(t *testing.T) {
     "items" : { "title" : "REFERENCE", "$ref" : "#" }
 }`)
 	rs = &RootSchema{}
-	if err := json.Unmarshal(schemaUnknown, rs); err != nil {
+	if err := jsoniter.Unmarshal(schemaUnknown, rs); err != nil {
 		panic("unmarshal schema: " + err.Error())
 	}
 	if rs.TopLevelType() != "unknown" {
@@ -133,7 +133,7 @@ func TestParseUrl(t *testing.T) {
     "$id": "http://example.com/root.json"
 }`)
 	rs := &RootSchema{}
-	if err := json.Unmarshal(schemaObject, rs); err != nil {
+	if err := jsoniter.Unmarshal(schemaObject, rs); err != nil {
 		panic("unmarshal schema: " + err.Error())
 	}
 
@@ -144,7 +144,7 @@ func TestParseUrl(t *testing.T) {
     "$id": "#/properites/firstName"
 }`)
 	rs = &RootSchema{}
-	if err := json.Unmarshal(schemaObject, rs); err != nil {
+	if err := jsoniter.Unmarshal(schemaObject, rs); err != nil {
 		panic("unmarshal schema: " + err.Error())
 	}
 
@@ -155,7 +155,7 @@ func TestParseUrl(t *testing.T) {
     "$id": "#"
 }`)
 	rs = &RootSchema{}
-	if err := json.Unmarshal(schemaObject, rs); err != nil {
+	if err := jsoniter.Unmarshal(schemaObject, rs); err != nil {
 		panic("unmarshal schema: " + err.Error())
 	}
 }
@@ -326,7 +326,7 @@ func TestDraft7(t *testing.T) {
 	}
 
 	rsch := &RootSchema{}
-	if err := json.Unmarshal(data, rsch); err != nil {
+	if err := jsoniter.Unmarshal(data, rsch); err != nil {
 		t.Errorf("error unmarshaling schema: %s", err.Error())
 		return
 	}
@@ -421,7 +421,7 @@ func runJSONTests(t *testing.T, testFilepaths []string) {
 			return
 		}
 
-		if err := json.Unmarshal(data, &testSets); err != nil {
+		if err := jsoniter.Unmarshal(data, &testSets); err != nil {
 			t.Errorf("error unmarshaling test set %s from JSON: %s", base, err.Error())
 			return
 		}
@@ -490,12 +490,12 @@ func TestJSONCoding(t *testing.T) {
 		}
 
 		rs := &RootSchema{}
-		if err := json.Unmarshal(data, rs); err != nil {
+		if err := jsoniter.Unmarshal(data, rs); err != nil {
 			t.Errorf("case %d error unmarshaling from json: %s", i, err.Error())
 			continue
 		}
 
-		output, err := json.MarshalIndent(rs, "", "  ")
+		output, err := jsoniter.MarshalIndent(rs, "", "  ")
 		if err != nil {
 			t.Errorf("case %d error marshaling to JSON: %s", i, err.Error())
 			continue

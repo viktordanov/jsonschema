@@ -1,7 +1,7 @@
 package jsonschema
 
 import (
-	"encoding/json"
+	"github.com/json-iterator/go"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -74,27 +74,27 @@ func (it Items) JSONChildren() (res map[string]JSONPather) {
 	return
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for Items
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for Items
 func (it *Items) UnmarshalJSON(data []byte) error {
 	s := &Schema{}
-	if err := json.Unmarshal(data, s); err == nil {
+	if err := jsoniter.Unmarshal(data, s); err == nil {
 		*it = Items{single: true, Schemas: []*Schema{s}}
 		return nil
 	}
 	ss := []*Schema{}
-	if err := json.Unmarshal(data, &ss); err != nil {
+	if err := jsoniter.Unmarshal(data, &ss); err != nil {
 		return err
 	}
 	*it = Items{Schemas: ss}
 	return nil
 }
 
-// MarshalJSON implements the json.Marshaler interface for Items
+// MarshalJSON implements the jsoniter.Marshaler interface for Items
 func (it Items) MarshalJSON() ([]byte, error) {
 	if it.single {
-		return json.Marshal(it.Schemas[0])
+		return jsoniter.Marshal(it.Schemas[0])
 	}
-	return json.Marshal([]*Schema(it.Schemas))
+	return jsoniter.Marshal([]*Schema(it.Schemas))
 }
 
 // AdditionalItems determines how child instances validate for arrays, and does not directly validate the immediate
@@ -146,10 +146,10 @@ func (a *AdditionalItems) JSONChildren() (res map[string]JSONPather) {
 	return a.Schema.JSONChildren()
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for AdditionalItems
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for AdditionalItems
 func (a *AdditionalItems) UnmarshalJSON(data []byte) error {
 	sch := &Schema{}
-	if err := json.Unmarshal(data, sch); err != nil {
+	if err := jsoniter.Unmarshal(data, sch); err != nil {
 		return err
 	}
 	// begin with -1 as default index to prevent AdditionalItems from evaluating
@@ -258,10 +258,10 @@ func (c Contains) JSONChildren() (res map[string]JSONPather) {
 	return Schema(c).JSONChildren()
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for Contains
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for Contains
 func (c *Contains) UnmarshalJSON(data []byte) error {
 	var sch Schema
-	if err := json.Unmarshal(data, &sch); err != nil {
+	if err := jsoniter.Unmarshal(data, &sch); err != nil {
 		return err
 	}
 	*c = Contains(sch)

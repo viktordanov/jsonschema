@@ -1,7 +1,7 @@
 package jsonschema
 
 import (
-	"encoding/json"
+	"github.com/json-iterator/go"
 )
 
 // If MUST be a valid JSON Schema.
@@ -50,19 +50,19 @@ func (i If) JSONChildren() (res map[string]JSONPather) {
 	return i.Schema.JSONChildren()
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for If
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for If
 func (i *If) UnmarshalJSON(data []byte) error {
 	var sch Schema
-	if err := json.Unmarshal(data, &sch); err != nil {
+	if err := jsoniter.Unmarshal(data, &sch); err != nil {
 		return err
 	}
 	*i = If{Schema: sch}
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler for If
+// MarshalJSON implements jsoniter.Marshaler for If
 func (i If) MarshalJSON() ([]byte, error) {
-	return json.Marshal(i.Schema)
+	return jsoniter.Marshal(i.Schema)
 }
 
 // Then MUST be a valid JSON Schema.
@@ -88,19 +88,19 @@ func (t Then) JSONChildren() (res map[string]JSONPather) {
 	return Schema(t).JSONChildren()
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for Then
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for Then
 func (t *Then) UnmarshalJSON(data []byte) error {
 	var sch Schema
-	if err := json.Unmarshal(data, &sch); err != nil {
+	if err := jsoniter.Unmarshal(data, &sch); err != nil {
 		return err
 	}
 	*t = Then(sch)
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler for Then
+// MarshalJSON implements jsoniter.Marshaler for Then
 func (t Then) MarshalJSON() ([]byte, error) {
-	return json.Marshal(Schema(t))
+	return jsoniter.Marshal(Schema(t))
 }
 
 // Else MUST be a valid JSON Schema.
@@ -126,17 +126,17 @@ func (e Else) JSONChildren() (res map[string]JSONPather) {
 	return Schema(e).JSONChildren()
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface for Else
+// UnmarshalJSON implements the jsoniter.Unmarshaler interface for Else
 func (e *Else) UnmarshalJSON(data []byte) error {
 	var sch Schema
-	if err := json.Unmarshal(data, &sch); err != nil {
+	if err := jsoniter.Unmarshal(data, &sch); err != nil {
 		return err
 	}
 	*e = Else(sch)
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler for Else
+// MarshalJSON implements jsoniter.Marshaler for Else
 func (e Else) MarshalJSON() ([]byte, error) {
-	return json.Marshal(Schema(e))
+	return jsoniter.Marshal(Schema(e))
 }
