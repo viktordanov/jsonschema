@@ -1,4 +1,4 @@
-module github.com/viktor.danov/jsonschema
+module github.com/viktordanov/jsonschema
 
 require (
 	github.com/json-iterator/go v1.1.8
